@@ -277,19 +277,15 @@ class SignalServer:
             await self._send_error(ws, f"房间 {code} 已满")
             return
 
-        # 服务器观察到的客户端公网地址 (WebSocket TCP 连接, 比 UDP STUN 更可靠)
-        observed_addr = f"{ws.remote_address[0]}:{ws.remote_address[1]}" if ws.remote_address else ''
-
         join_info = {
             'public_addr': msg.get('public_addr', ''),
             'local_addr': msg.get('local_addr', ''),
             'nat_type': msg.get('nat_type', ''),
             'client_id': msg.get('client_id', ''),
-            'observed_addr': observed_addr,
         }
 
         room = self._rooms.join_room(code, ws, join_info)
-        print(f"[房间] {code} Join 方已加入 (观察地址: {observed_addr})")
+        print(f"[房间] {code} Join 方已加入")
 
         # 通知 Join 方
         await self._send(ws, {
@@ -300,7 +296,6 @@ class SignalServer:
                 'local_addr': room.host_info.get('local_addr', ''),
                 'nat_type': room.host_info.get('nat_type', ''),
                 'mc_port': room.host_info.get('mc_port', 25565),
-                'observed_addr': f"{room.host_ws.remote_address[0]}:{room.host_ws.remote_address[1]}" if room.host_ws.remote_address else '',
             },
             'message': f'已加入房间 {code}，开始建立连接...',
         })
@@ -312,7 +307,6 @@ class SignalServer:
                 'public_addr': join_info['public_addr'],
                 'local_addr': join_info.get('local_addr', ''),
                 'nat_type': join_info.get('nat_type', ''),
-                'observed_addr': join_info.get('observed_addr', ''),
             },
             'message': '好友已加入，开始打洞...',
         })
