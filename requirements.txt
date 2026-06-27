@@ -1,0 +1,5 @@
+# 我的世界 P2P 链接器 - Python 依赖
+# 安装: pip install -r requirements.txt
+
+websockets>=12.0       # WebSocket 信令通信
+cryptography>=41.0     # AES-GCM 加密隧道
